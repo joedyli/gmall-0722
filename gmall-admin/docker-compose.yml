@@ -1,0 +1,8 @@
+version: '2'
+services:
+  guli-fast:
+    image: guli/fast
+    ports:
+      - "8080:8080"
+    environment:
+      - spring.profiles.active=dev
