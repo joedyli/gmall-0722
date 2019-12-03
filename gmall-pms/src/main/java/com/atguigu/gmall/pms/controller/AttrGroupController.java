@@ -1,12 +1,14 @@
 package com.atguigu.gmall.pms.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 
 import com.atguigu.core.bean.PageVo;
 import com.atguigu.core.bean.QueryCondition;
 import com.atguigu.core.bean.Resp;
+import com.atguigu.gmall.pms.vo.GroupVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,21 @@ import com.atguigu.gmall.pms.service.AttrGroupService;
 public class AttrGroupController {
     @Autowired
     private AttrGroupService attrGroupService;
+
+    @GetMapping("withattr/{gid}")
+    public Resp<GroupVO> queryGroupWithAttrsByGid(@PathVariable("gid")Long gid){
+
+        GroupVO groupVO = this.attrGroupService.queryGroupWithAttrsByGid(gid);
+
+        return Resp.ok(groupVO);
+    }
+
+    @GetMapping("{catId}")
+    public Resp<PageVo> queryGroupByPage(QueryCondition condition, @PathVariable("catId")Long catId){
+
+        PageVo page = attrGroupService.queryGroupByPage(condition, catId);
+        return Resp.ok(page);
+    }
 
     /**
      * 列表
