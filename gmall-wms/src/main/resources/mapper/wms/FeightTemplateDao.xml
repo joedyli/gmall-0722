@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atguigu.gmall.wms.dao.FeightTemplateDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.atguigu.gmall.wms.entity.FeightTemplateEntity" id="feightTemplateMap">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="chargeType" column="charge_type"/>
+        <result property="firstWeight" column="first_weight"/>
+        <result property="firstFee" column="first_fee"/>
+        <result property="continueWeight" column="continue_weight"/>
+        <result property="continueFee" column="continue_fee"/>
+        <result property="dest" column="dest"/>
+    </resultMap>
+
+
+</mapper>

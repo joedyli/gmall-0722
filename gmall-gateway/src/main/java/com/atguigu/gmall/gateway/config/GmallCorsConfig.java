@@ -26,4 +26,5 @@ public class GmallCorsConfig {
         // cors过滤器对象
         return new CorsWebFilter(configurationSource);
     }
+
 }

@@ -32,8 +32,17 @@ import com.atguigu.gmall.pms.service.AttrGroupService;
 @RestController
 @RequestMapping("pms/attrgroup")
 public class AttrGroupController {
+
     @Autowired
     private AttrGroupService attrGroupService;
+
+    @GetMapping("withattrs/cat/{catId}")
+    public Resp<List<GroupVO>> queryGroupWithAttrsByCid(@PathVariable("catId")Long cid){
+
+        List<GroupVO> groupVOS = this.attrGroupService.queryGroupWithAttrsByCid(cid);
+
+        return Resp.ok(groupVOS);
+    }
 
     @GetMapping("withattr/{gid}")
     public Resp<GroupVO> queryGroupWithAttrsByGid(@PathVariable("gid")Long gid){
