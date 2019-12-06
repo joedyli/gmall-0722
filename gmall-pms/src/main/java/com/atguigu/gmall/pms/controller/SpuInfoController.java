@@ -1,5 +1,6 @@
 package com.atguigu.gmall.pms.controller;
 
+import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -72,7 +73,7 @@ public class SpuInfoController {
     @ApiOperation("保存")
     @PostMapping("/save")
     @PreAuthorize("hasAuthority('pms:spuinfo:save')")
-    public Resp<Object> save(@RequestBody SpuInfoVO spuInfoVO){
+    public Resp<Object> save(@RequestBody SpuInfoVO spuInfoVO) throws FileNotFoundException {
 		spuInfoService.bigSave(spuInfoVO);
 
         return Resp.ok(null);
