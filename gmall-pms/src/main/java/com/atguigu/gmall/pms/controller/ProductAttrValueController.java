@@ -1,6 +1,7 @@
 package com.atguigu.gmall.pms.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 
@@ -32,6 +33,14 @@ import com.atguigu.gmall.pms.service.ProductAttrValueService;
 public class ProductAttrValueController {
     @Autowired
     private ProductAttrValueService productAttrValueService;
+
+    @GetMapping("{spuId}")
+    public Resp<List<ProductAttrValueEntity>> querySearchAttrValueBySpuId(@PathVariable("spuId")Long spuId){
+
+        List<ProductAttrValueEntity> searchAttrValues = this.productAttrValueService.querySearchAttrValueBySpuId(spuId);
+
+        return Resp.ok(searchAttrValues);
+    }
 
     /**
      * 列表

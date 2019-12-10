@@ -5,19 +5,18 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.1.RELEASE</version>
+        <version>2.2.2.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.atguigu</groupId>
-    <artifactId>gmall-pms</artifactId>
+    <artifactId>gmall-search</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>gmall-pms</name>
-    <description>谷粒商城商品管理系统</description>
+    <name>gmall-search</name>
+    <description>谷粒商城搜索系统</description>
 
     <properties>
         <java.version>1.8</java.version>
         <spring-cloud.version>Hoxton.RELEASE</spring-cloud.version>
-        <mysql.version>5.1.46</mysql.version>
     </properties>
 
     <dependencies>
@@ -25,8 +24,13 @@
             <groupId>com.atguigu</groupId>
             <artifactId>gmall-core</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.baomidou</groupId>
+                    <artifactId>mybatis-plus-boot-starter</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-
         <dependency>
             <groupId>com.atguigu</groupId>
             <artifactId>gmall-pms-interface</artifactId>
@@ -34,16 +38,12 @@
         </dependency>
         <dependency>
             <groupId>com.atguigu</groupId>
-            <artifactId>gmall-sms-interface</artifactId>
+            <artifactId>gmall-wms-interface</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
+            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -59,20 +59,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.aliyun.oss</groupId>
-            <artifactId>aliyun-sdk-oss</artifactId>
-            <version>3.5.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-alibaba-seata</artifactId>
-            <version>2.0.0.RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>io.seata</groupId>
-            <artifactId>seata-all</artifactId>
-            <version>0.9.0</version>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.6</version>
         </dependency>
 
         <dependency>
@@ -85,11 +74,6 @@
                     <artifactId>junit-vintage-engine</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 

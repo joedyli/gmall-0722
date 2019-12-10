@@ -14,5 +14,10 @@
         <result property="quickShow" column="quick_show"/>
     </resultMap>
 
+    <select id="querySearchAttrValueBySpuId" resultMap="productAttrValueMap">
+        select a.*
+        from pms_product_attr_value a INNER JOIN pms_attr b on a.attr_id=b.attr_id
+        where b.search_type=1 and a.spu_id=#{spuId}
+    </select>
 
 </mapper>

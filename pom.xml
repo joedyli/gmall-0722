@@ -13,6 +13,8 @@
         <module>gmall-core</module>
         <module>gmall-admin</module>
         <module>gmall-sms-interface</module>
+        <module>gmall-pms-interface</module>
+        <module>gmall-wms-interface</module>
     </modules>
 
 </project>
