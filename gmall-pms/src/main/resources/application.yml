@@ -1,0 +1,10 @@
+spring:
+  rabbitmq:
+    host: 172.16.116.100
+    port: 5672
+    virtual-host: /fengge
+    username: fengge
+    password: fengge
+item:
+  rabbitmq:
+    exchange: GMALL-PMS-EXCHANGE

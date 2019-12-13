@@ -23,12 +23,14 @@ import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.bucket.nested.ParsedNested;
 import org.elasticsearch.search.aggregations.bucket.terms.*;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -115,15 +117,36 @@ public class SearchService {
         SearchHit[] subHits = hits.getHits();
         List<Goods> goodsList = new ArrayList<>();
         for (SearchHit subHit : subHits) {
-            System.out.println(subHit.getSourceAsString());
             Goods goods = OBJECT_MAPPER.readValue(subHit.getSourceAsString(), new TypeReference<Goods>() {
             });
+            goods.setTitle(subHit.getHighlightFields().get("title").getFragments()[0].toString());
             goodsList.add(goods);
         }
         responseVO.setProducts(goodsList);
 
         // 规格参数
-        responseVO.setAttrs(null);
+        // 获取嵌套聚合对象
+        ParsedNested attrAgg = (ParsedNested)aggregationMap.get("attrAgg");
+        // 规格参数id聚合对象
+        ParsedLongTerms attrIdAgg = (ParsedLongTerms)attrAgg.getAggregations().get("attrIdAgg");
+        List<Terms.Bucket> buckets = (List<Terms.Bucket>)attrIdAgg.getBuckets();
+        if (!CollectionUtils.isEmpty(buckets)) {
+            List<SearchResponseAttrVO> searchResponseAttrVOS = buckets.stream().map(bucket -> {
+                SearchResponseAttrVO responseAttrVO = new SearchResponseAttrVO();
+                // 设置规格参数id
+                responseAttrVO.setProductAttributeId(bucket.getKeyAsNumber().longValue());
+                // 设置规格参数名
+                List<? extends Terms.Bucket> nameBuckets = ((ParsedStringTerms) (bucket.getAggregations().get("attrNameAgg"))).getBuckets();
+                responseAttrVO.setName(nameBuckets.get(0).getKeyAsString());
+                // 设置规格参数值的列表
+                List<? extends Terms.Bucket> valueBuckets = ((ParsedStringTerms) (bucket.getAggregations().get("attrValueAgg"))).getBuckets();
+                List<String> values = valueBuckets.stream().map(Terms.Bucket::getKeyAsString).collect(Collectors.toList());
+                responseAttrVO.setValue(values);
+                return responseAttrVO;
+            }).collect(Collectors.toList());
+            responseVO.setAttrs(searchResponseAttrVOS);
+        }
+
 
         return responseVO;
     }
@@ -229,6 +252,9 @@ public class SearchService {
                         .subAggregation(AggregationBuilders.terms("attrValueAgg").field("attrs.attrValue"))));
 
         System.out.println(sourceBuilder.toString());
+
+        // 结果集过滤
+        sourceBuilder.fetchSource(new String[]{"skuId", "pic", "title", "price"}, null);
 
         // 查询参数
         SearchRequest searchRequest = new SearchRequest("goods");

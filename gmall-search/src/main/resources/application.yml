@@ -8,3 +8,10 @@ spring:
   elasticsearch:
     rest:
       uris: http://172.16.116.100:9200
+  jackson:
+    default-property-inclusion: non_null
+  rabbitmq:
+    host: 172.16.116.100
+    virtual-host: /fengge
+    username: fengge
+    password: fengge
