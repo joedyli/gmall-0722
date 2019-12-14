@@ -2,10 +2,15 @@ package com.atguigu.gmall.index.service;
 
 import com.alibaba.fastjson.JSON;
 import com.atguigu.core.bean.Resp;
+import com.atguigu.gmall.index.annotation.GmallCache;
 import com.atguigu.gmall.index.feign.GmallPmsClient;
 import com.atguigu.gmall.pms.entity.CategoryEntity;
 import com.atguigu.gmall.pms.vo.CategoryVO;
+import org.aopalliance.intercept.Joinpoint;
 import org.apache.commons.lang3.StringUtils;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.Signature;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.redisson.api.RCountDownLatch;
 import org.redisson.api.RLock;
 import org.redisson.api.RReadWriteLock;
@@ -16,6 +21,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
@@ -44,32 +50,33 @@ public class IndexService {
         return listResp.getData();
     }
 
+    @GmallCache(prefix = "index:cates:", timeout = 7200, random = 100)
     public List<CategoryVO> querySubCategories(Long pid) {
         // 1. 判断缓存中有没有
-        String cateJson = this.redisTemplate.opsForValue().get(KEY_PREFIX + pid);
+//        String cateJson = this.redisTemplate.opsForValue().get(KEY_PREFIX + pid);
         // 2. 有，直接返回
-        if (!StringUtils.isEmpty(cateJson)) {
-            return JSON.parseArray(cateJson, CategoryVO.class);
-        }
+//        if (!StringUtils.isEmpty(cateJson)) {
+//            return JSON.parseArray(cateJson, CategoryVO.class);
+//        }
 
-        RLock lock = this.redissonClient.getLock("lock" + pid);
-        lock.lock();
+//        RLock lock = this.redissonClient.getLock("lock" + pid);
+//        lock.lock();
 
         // 1. 判断缓存中有没有
-        String cateJson2 = this.redisTemplate.opsForValue().get(KEY_PREFIX + pid);
+//        String cateJson2 = this.redisTemplate.opsForValue().get(KEY_PREFIX + pid);
         // 2. 有，直接返回
-        if (!StringUtils.isEmpty(cateJson2)) {
-            lock.unlock();
-            return JSON.parseArray(cateJson2, CategoryVO.class);
-        }
+//        if (!StringUtils.isEmpty(cateJson2)) {
+//            lock.unlock();
+//            return JSON.parseArray(cateJson2, CategoryVO.class);
+//        }
 
         // 查询数据库
         Resp<List<CategoryVO>> listResp = gmallPmsClient.querySubCategories(pid);
         List<CategoryVO> categoryVOS = listResp.getData();
         // 3. 查询完成后放入缓存
-        this.redisTemplate.opsForValue().set(KEY_PREFIX + pid, JSON.toJSONString(categoryVOS), 7 + new Random().nextInt(5), TimeUnit.DAYS);
+//        this.redisTemplate.opsForValue().set(KEY_PREFIX + pid, JSON.toJSONString(categoryVOS), 7 + new Random().nextInt(5), TimeUnit.DAYS);
 
-        lock.unlock();
+//        lock.unlock();
 
         return listResp.getData();
     }
