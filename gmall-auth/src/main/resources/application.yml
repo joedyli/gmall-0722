@@ -1,0 +1,14 @@
+server:
+  port: 8089
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+gmall:
+  jwt:
+    pubKeyPath: D:\\project-0722\\rsa\\rsa.pub # 公钥地址
+    priKeyPath: D:\\project-0722\\rsa\\rsa.pri # 私钥地址
+    secret: sf3423jsdf#3$@FDS32
+    expire: 180 # 过期时间,单位分钟
+    cookieName: GMALL_TOKEN
