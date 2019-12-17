@@ -1,0 +1,14 @@
+server:
+  port: 8090
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+  redis:
+    host: 172.16.116.100
+gmall:
+  jwt:
+    pubKeyPath: D:\\project-0722\\rsa\\rsa.pub # 公钥地址
+    cookieName: GMALL_TOKEN
+    userKey: user-key
