@@ -175,4 +175,12 @@ public class CartService {
             hashOps.delete(skuId.toString());
         }
     }
+
+    public List<Cart> queryCheckedCartsByUserId(Long userId) {
+        BoundHashOperations<String, Object, Object> hashOps = this.redisTemplate.boundHashOps(KEY_PREFIX + userId);
+        List<Object> cartJsonList = hashOps.values();
+        return cartJsonList.stream()
+                .map(cartJson -> JSON.parseObject(cartJson.toString(), Cart.class))
+                .filter(Cart::getCheck).collect(Collectors.toList());
+    }
 }
