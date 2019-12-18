@@ -14,6 +14,7 @@ public class Cart {
     private String title;
     private String defaultImage;
     private BigDecimal price;
+    private BigDecimal currentPrice;
     private Integer count;
     private Boolean store;
     private List<SkuSaleAttrValueEntity> saleAttrValues;

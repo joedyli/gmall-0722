@@ -7,7 +7,7 @@ import com.atguigu.gmall.cart.feign.GmallSmsClient;
 import com.atguigu.gmall.cart.feign.GmallWmsClient;
 import com.atguigu.gmall.cart.interceptors.LoginInterceptor;
 import com.atguigu.gmall.cart.pojo.Cart;
-import com.atguigu.gmall.cart.pojo.UserInfo;
+import com.atguigu.core.bean.UserInfo;
 import com.atguigu.gmall.pms.entity.SkuInfoEntity;
 import com.atguigu.gmall.pms.entity.SkuSaleAttrValueEntity;
 import com.atguigu.gmall.sms.vo.SaleVO;
@@ -17,9 +17,8 @@ import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import sun.rmi.runtime.Log;
 
-import java.time.OffsetDateTime;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +26,7 @@ import java.util.stream.Collectors;
 public class CartService {
 
     private static final String KEY_PREFIX = "gmall:cart:";
+    private static final String PRICE_PREFIX = "gmall:sku:";
 
     @Autowired
     private StringRedisTemplate redisTemplate;
@@ -81,6 +81,7 @@ public class CartService {
             if (!CollectionUtils.isEmpty(wareSkuEntities)) {
                 cart.setStore(wareSkuEntities.stream().anyMatch(wareSkuEntity -> wareSkuEntity.getStock() > 0));
             }
+            this.redisTemplate.opsForValue().set(PRICE_PREFIX + skuId, skuInfoEntity.getPrice().toString());
         }
         hashOps.put(skuId, JSON.toJSONString(cart));
     }
@@ -107,7 +108,13 @@ public class CartService {
         List<Object> cartJsonList = unLoginHashOps.values();
         List<Cart> unLoginCarts = null;
         if (!CollectionUtils.isEmpty(cartJsonList)) {
-            unLoginCarts = cartJsonList.stream().map(cartJson -> JSON.parseObject(cartJson.toString(), Cart.class)).collect(Collectors.toList());
+            unLoginCarts = cartJsonList.stream().map(cartJson -> {
+                Cart cart = JSON.parseObject(cartJson.toString(), Cart.class);
+                // 查询当前价格
+                String priceString = this.redisTemplate.opsForValue().get(PRICE_PREFIX + cart.getSkuId());
+                cart.setCurrentPrice(new BigDecimal(priceString));
+                return cart;
+            }).collect(Collectors.toList());
         }
 
         // 判断是否登录，未登录，直接返回
@@ -134,7 +141,13 @@ public class CartService {
 
         // 查询登录状态的购物车
         List<Object> loginCartJsonList = loginHashOps.values();
-        return loginCartJsonList.stream().map(cartJson -> JSON.parseObject(cartJson.toString(), Cart.class)).collect(Collectors.toList());
+        return loginCartJsonList.stream().map(cartJson -> {
+            Cart cart = JSON.parseObject(cartJson.toString(), Cart.class);
+            // 查询当前价格
+            String priceString = this.redisTemplate.opsForValue().get(PRICE_PREFIX + cart.getSkuId());
+            cart.setCurrentPrice(new BigDecimal(priceString));
+            return cart;
+        }).collect(Collectors.toList());
     }
 
     public void updateCart(Cart cart) {
@@ -151,6 +164,15 @@ public class CartService {
             cart = JSON.parseObject(cartJson, Cart.class);
             cart.setCount(count);
             boundHashOps.put(cart.getSkuId().toString(), JSON.toJSONString(cart));
+        }
+    }
+
+    public void deleteCart(Long skuId) {
+
+        String key = this.getLoginState();
+        BoundHashOperations<String, Object, Object> hashOps = this.redisTemplate.boundHashOps(key);
+        if (hashOps.hasKey(skuId.toString())){
+            hashOps.delete(skuId.toString());
         }
     }
 }
