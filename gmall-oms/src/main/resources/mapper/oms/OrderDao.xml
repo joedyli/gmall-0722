@@ -49,5 +49,9 @@
         <result property="modifyTime" column="modify_time"/>
     </resultMap>
 
+    <update id="closeOrder">
+        update oms_order set `status`=4 where order_sn=#{orderToken} and `status`=0
+    </update>
+
 
 </mapper>
