@@ -25,4 +25,8 @@
         update wms_ware_sku set stock_locked = stock_locked - #{count} where id=#{wareSkuId}
     </update>
 
+    <update id="minusStore" >
+        update wms_ware_sku set stock_locked = stock_locked - #{count},stock = stock - #{count} where id=#{wareSkuId}
+    </update>
+
 </mapper>
